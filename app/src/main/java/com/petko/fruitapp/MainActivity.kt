@@ -19,8 +19,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             FruitAppTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     val windowSize = calculateWindowSizeClass(this)
                     FruitInfoApp(

@@ -51,7 +51,7 @@ fun FruitDetailsScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.inverseOnSurface)
+                .background(color = MaterialTheme.colorScheme.primaryContainer)
                 .padding(top = 18.dp)
         ) {
             item {
@@ -128,7 +128,7 @@ private fun FruitDetailsCard(
         Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
     }
     Column (
-        modifier = modifier,
+        modifier = modifier
     ){
         Card(
             modifier = Modifier,
@@ -147,7 +147,6 @@ private fun FruitDetailsCard(
 
         Spacer(modifier = Modifier.height(15.dp))
 
-        // TODO
         if (isFullScreen) {
             Button(
                 onClick = {},

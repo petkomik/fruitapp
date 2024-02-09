@@ -79,7 +79,7 @@ fun FruitHomeScreen(
                         modifier = Modifier
                             .wrapContentWidth()
                             .fillMaxHeight()
-                            .background(MaterialTheme.colorScheme.inverseOnSurface)
+                            .background(MaterialTheme.colorScheme.primaryContainer)
                             .padding(
                                 horizontal = 12.dp,
                                 vertical = 8.dp
@@ -135,12 +135,11 @@ private fun FruitAppContent(
         Row(modifier = Modifier.fillMaxSize()) {
             AnimatedVisibility(visible = navigationType == FruitNavigationType.NAVIGATION_RAIL) {
                 val navigationRailContentDescription = stringResource(R.string.navigation_rail)
-                NavigationRail(
+                FruitNavigationRail(
                     currentTab = fruitUiState.currentPageType,
                     onTabPressed = onTabPressed,
                     navigationItemContentList = navigationItemContentList,
                     modifier = Modifier
-                        .testTag(navigationRailContentDescription)
                 )
             }
             Column(
@@ -171,7 +170,6 @@ private fun FruitAppContent(
                         onTabPressed = onTabPressed,
                         navigationItemContentList = navigationItemContentList,
                         modifier = Modifier
-                            .fillMaxWidth()
                     )
                 }
             }
@@ -180,13 +178,16 @@ private fun FruitAppContent(
 }
 
 @Composable
-private fun NavigationRail(
+private fun FruitNavigationRail(
     currentTab: PageType,
     onTabPressed: ((PageType) -> Unit),
     navigationItemContentList: List<NavigationItemContent>,
     modifier: Modifier = Modifier
 ) {
-    NavigationRail(modifier = modifier) {
+    NavigationRail(
+        modifier = modifier,
+        containerColor = MaterialTheme.colorScheme.primaryContainer
+        ) {
         for (navItem in navigationItemContentList) {
             NavigationRailItem(
                 selected = currentTab == navItem.pageType,
@@ -209,7 +210,10 @@ private fun BottomNavigationBar(
     navigationItemContentList: List<NavigationItemContent>,
     modifier: Modifier = Modifier
 ) {
-    NavigationBar(modifier = modifier) {
+    NavigationBar(
+        modifier = modifier,
+        containerColor = MaterialTheme.colorScheme.primaryContainer
+    ) {
         for (navItem in navigationItemContentList) {
             NavigationBarItem(
                 selected = currentTab == navItem.pageType,

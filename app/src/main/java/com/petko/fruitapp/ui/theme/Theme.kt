@@ -78,10 +78,10 @@ fun FruitAppTheme(
   useDarkTheme: Boolean = isSystemInDarkTheme(),
   content: @Composable() () -> Unit
 ) {
-  val colors = if (!useDarkTheme) {
-    LightColors
+  val colors = if (useDarkTheme) {
+      DarkColors
   } else {
-    DarkColors
+      LightColors
   }
 
   MaterialTheme(

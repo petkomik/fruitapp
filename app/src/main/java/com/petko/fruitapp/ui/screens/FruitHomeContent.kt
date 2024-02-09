@@ -123,9 +123,9 @@ fun FruitListItem(
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = if (selected) {
-                MaterialTheme.colorScheme.primaryContainer
-            } else {
                 MaterialTheme.colorScheme.secondaryContainer
+            } else {
+                MaterialTheme.colorScheme.primaryContainer
             }
         ),
         onClick = onCardClick,
