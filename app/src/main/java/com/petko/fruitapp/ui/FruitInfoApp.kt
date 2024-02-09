@@ -3,8 +3,6 @@
 package com.petko.fruitapp.ui
 
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.petko.fruitapp.ui.screens.FruitViewModel
@@ -23,7 +21,6 @@ fun FruitInfoApp(
     windowSize: WindowWidthSizeClass,
     modifier: Modifier = Modifier
 ) {
-
     val navigationType: FruitNavigationType
     val contentType: FruitContentType
     val fruitViewModel: FruitViewModel = viewModel(factory = FruitViewModel.Factory)
@@ -47,22 +44,11 @@ fun FruitInfoApp(
             contentType = FruitContentType.LIST_ONLY
         }
     }
-    /*
-    Column {
-        Text (
-            text = fruitUiState.fruits.get(PageType.Home)?.size.toString(),
-            style = MaterialTheme.typography.headlineMedium
-        )
-        Text (
-            text = fruitUiState.fruits.get(PageType.Home)?.size.toString(),
-            style = MaterialTheme.typography.headlineMedium
-        )
+
+    if(fruitUiState.currentSelectedFruit.name == "") {
+        fruitViewModel.resetHomeScreenStates()
     }
-    */
-    Text (
-        text = fruitUiState.toString(),
-        style = MaterialTheme.typography.headlineMedium
-    )
+
     FruitHomeScreen(
         navigationType = navigationType,
         contentType= contentType,
@@ -81,5 +67,4 @@ fun FruitInfoApp(
         },
         modifier = modifier
     )
-
 }

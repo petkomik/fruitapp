@@ -23,13 +23,16 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.petko.fruitapp.R
 import com.petko.fruitapp.utils.Fruit
 import com.petko.fruitapp.utils.PageType
@@ -49,7 +52,7 @@ fun FruitDetailsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(color = MaterialTheme.colorScheme.inverseOnSurface)
-                .padding(top = dimensionResource(R.dimen.detail_card_list_padding_top))
+                .padding(top = 18.dp)
         ) {
             item {
                 if ( isFullScreen ) {
@@ -58,17 +61,18 @@ fun FruitDetailsScreen(
                         fruitUiState,
                         Modifier
                             .fillMaxWidth()
-                            .padding(bottom = dimensionResource(R.dimen.detail_topbar_padding_bottom))
+                            .padding(bottom = 18.dp)
                     )
                 }
                 FruitDetailsCard(
                     fruit = fruitUiState.currentSelectedFruit,
                     pageType = fruitUiState.currentPageType,
                     modifier = if (isFullScreen) {
-                        Modifier.padding(horizontal = dimensionResource(R.dimen.detail_card_outer_padding_horizontal))
+                        Modifier.padding(horizontal = 24.dp)
                     } else {
-                        Modifier.padding(end = dimensionResource(R.dimen.detail_card_outer_padding_horizontal))
-                    }
+                        Modifier.padding(horizontal = 18.dp)
+                    },
+                    isFullScreen = isFullScreen
                 )
             }
         }
@@ -88,7 +92,7 @@ private fun FruitDetailsScreenTopBar(
         IconButton(
             onClick = onBackButtonClicked,
             modifier = Modifier
-                .padding(horizontal = dimensionResource(R.dimen.detail_topbar_back_button_padding_horizontal))
+                .padding(horizontal = 24.dp)
                 .background(MaterialTheme.colorScheme.surface, shape = CircleShape),
         ) {
             Icon(
@@ -100,12 +104,13 @@ private fun FruitDetailsScreenTopBar(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(end = dimensionResource(R.dimen.detail_subject_padding_end))
+                .padding(end = 40.dp)
         ) {
             Text(
                 text = fruitUiState.currentSelectedFruit.name,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontWeight = FontWeight.SemiBold
             )
         }
     }
@@ -122,76 +127,154 @@ private fun FruitDetailsCard(
     val displayToast = { text: String ->
         Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
     }
-    Card(
+    Column (
         modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(dimensionResource(R.dimen.detail_card_inner_padding))
+    ){
+        Card(
+            modifier = Modifier,
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
-            DetailsScreenHeader(
-                fruit,
-                Modifier.fillMaxWidth()
-            )
-            if (isFullScreen) {
-                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.detail_content_padding_top)))
-            } else {
-                Text(
-                    text = fruit.name,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.outline,
-                    modifier = Modifier.padding(
-                        top = dimensionResource(R.dimen.detail_content_padding_top),
-                        bottom = dimensionResource(R.dimen.detail_expanded_subject_body_spacing)
-                    ),
-                )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        all = 20.dp
+                    )
+            ) {
+                FruitInfo(fruit, Modifier, isFullScreen)
             }
-            Text(
-                text = fruit.family,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            DetailsScreenButtonBar(pageType, displayToast)
+        }
+
+        Spacer(modifier = Modifier.height(15.dp))
+
+        // TODO
+        if (isFullScreen) {
+            Button(
+                onClick = {},
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.small,
+                enabled = true
+            ) {
+                Text("Add To Favourites")
+            }
+        } else {
+            OutlinedButton(
+                onClick = {},
+                shape = MaterialTheme.shapes.small,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Remove From Favourites")
+            }
         }
     }
 }
 
 @Composable
-private fun DetailsScreenButtonBar(
-    pageType: PageType,
-    displayToast: (String) -> Unit,
-    modifier: Modifier = Modifier
+private fun FruitInfo(
+    fruit: Fruit,
+    modifier: Modifier = Modifier,
+    isFullScreen: Boolean = false
 ) {
-    Box(modifier = modifier) {
-            ActionButton(
-                text = stringResource(id = R.string.add_to_favourite),
-                onButtonClicked = displayToast
-            )
-        }
+    if (!isFullScreen) {
+        ItemDetailsRow(detailType = "Name", itemDetail = fruit.name, modifier = modifier)
+    }
+    ItemDetailsRow(
+        detailType = "Id",
+        itemDetail = fruit.id.toString(),
+        modifier = modifier
+    )
+    ItemDetailsRow(
+        detailType = "Order",
+        itemDetail = fruit.order,
+        modifier = modifier
+    )
+    ItemDetailsRow(
+        detailType = "Family",
+        itemDetail = fruit.family,
+        modifier = modifier
+    )
+    ItemDetailsRow(
+        detailType = "Genus",
+        itemDetail = fruit.genus,
+        modifier = modifier
+    )
+    ItemDetailsRow(
+        detailType = "Nutrition:",
+        modifier = modifier
+    )
+    ItemNutritionRow(
+        detailType = "Calories",
+        itemDetail = fruit.nutritions.calories,
+        modifier = modifier,
+        unit = "kcal"
+    )
+    ItemNutritionRow(
+        detailType = "Protein",
+        itemDetail = fruit.nutritions.protein,
+        modifier = modifier,
+        unit = "g"
+    )
+    ItemNutritionRow(
+        detailType = "Carbohydrates",
+        itemDetail = fruit.nutritions.carbohydrates,
+        modifier = modifier,
+        unit = "g"
+    )
+    ItemNutritionRow(
+        detailType = "Fats",
+        itemDetail = fruit.nutritions.fat,
+        modifier = modifier,
+        unit = "g"
+    )
+    ItemNutritionRow(
+        detailType = "Sugar",
+        itemDetail = fruit.nutritions.sugar,
+        modifier = modifier,
+        unit = "g"
+    )
 }
 
+@Composable
+private fun ItemDetailsRow(
+    detailType: String,
+    itemDetail: String = "",
+    unit: String = "",
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                vertical = 5.dp
+            )
+    ) {
+        Text(text = detailType, fontWeight = FontWeight.Medium)
+        Spacer(modifier = Modifier.weight(1f))
+        Text(text = itemDetail + unit, fontStyle = FontStyle.Italic)
+    }
+}
 
 @Composable
-private fun DetailsScreenHeader(fruit: Fruit, modifier: Modifier = Modifier) {
-    Column(
+private fun ItemNutritionRow(
+    detailType: String,
+    itemDetail: Double = 0.0,
+    unit: String = "",
+    modifier: Modifier = Modifier
+) {
+    Row(
         modifier = Modifier
+            .fillMaxWidth()
             .padding(
-                horizontal = dimensionResource(R.dimen.fruit_header_content_padding_horizontal),
-                vertical = dimensionResource(R.dimen.fruit_header_content_padding_vertical)
-            ),
-        verticalArrangement = Arrangement.Center
+                vertical = 5.dp
+            )
     ) {
         Text(
-            text = fruit.name,
-            style = MaterialTheme.typography.labelMedium
+            text = detailType,
+            fontWeight = FontWeight.Normal,
+            modifier = modifier.padding(start = 30.dp)
         )
-        Text(
-            text = fruit.family,
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.outline
-        )
+        Spacer(modifier = Modifier.weight(1f))
+        Text(text = "$itemDetail $unit", fontStyle = FontStyle.Italic)
     }
 }
 
@@ -207,7 +290,9 @@ private fun ActionButton(
             onClick = { onButtonClicked(text) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = dimensionResource(R.dimen.detail_action_button_padding_vertical)),
+                .padding(
+                    horizontal = 10.dp
+                ),
             colors = ButtonDefaults.buttonColors(
                 containerColor =
                 if (containIrreversibleAction) {

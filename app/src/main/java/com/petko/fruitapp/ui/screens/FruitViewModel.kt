@@ -48,9 +48,9 @@ class FruitViewModel(private val fruitRepository: FruitRepository) : ViewModel()
     fun resetHomeScreenStates() {
         _fruitUiState.update {
             it.copy(
-                currentSelectedFruit = Fruit("", 0, "", "", "",
-                    Nutrition(0.0, 0.0, 0.0, 0, 0.0)
-                ),
+                currentSelectedFruit = it.fruits[it.currentPageType]?.get(0)
+                    ?: Fruit("", 0, "", "", "",
+                        Nutrition(0.0, 0.0, 0.0, 0.0, 0.0)),
                 isShowingHomepage = true
             )
         }

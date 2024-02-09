@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">FruitApp</string>
-    <string name="tab_favorites">Favourite</string>
+    <string name="app_name_uc">FRUITAPP</string>
+    <string name="tab_favorites">Favourites</string>
     <string name="tab_home">Home</string>
     <string name="logo">Logo of the App</string>
     <string name="navigation_back">Back</string>
