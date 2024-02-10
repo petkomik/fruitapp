@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import com.petko.fruitapp.ui.theme.Shapes
 
 
 private val LightColors = lightColorScheme(
@@ -77,14 +78,15 @@ fun FruitAppTheme(
   useDarkTheme: Boolean = isSystemInDarkTheme(),
   content: @Composable() () -> Unit
 ) {
-  val colors = if (!useDarkTheme) {
-    LightColors
+  val colors = if (useDarkTheme) {
+      DarkColors
   } else {
-    DarkColors
+      LightColors
   }
 
   MaterialTheme(
     colorScheme = colors,
+    shapes = Shapes,
     content = content
   )
 }

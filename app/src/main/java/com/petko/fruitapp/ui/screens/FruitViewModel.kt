@@ -1,6 +1,5 @@
 package com.petko.fruitapp.ui.screens
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -18,7 +17,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 
-class FruitViewModel(private val fruitRepository: FruitRepository) : ViewModel() {
+class FruitViewModel(
+    private val networkFruitRepository: FruitRepository,
+    private val offlineFruitsRepository: FruitRepository
+) : ViewModel() {
 
     private val _fruitUiState = MutableStateFlow(FruitUiState())
     val fruitUiState: StateFlow<FruitUiState> = _fruitUiState
@@ -27,15 +29,44 @@ class FruitViewModel(private val fruitRepository: FruitRepository) : ViewModel()
         getFruits()
     }
 
+    fun addToFavorites(fruit: Fruit) {
+        viewModelScope.launch {
+            offlineFruitsRepository.insertItem(fruit.toFruitDB())
+            getFruits()
+        }
+    }
+
+    fun removeFromFavorites(fruit: Fruit) {
+        viewModelScope.launch {
+            offlineFruitsRepository.deleteItem(fruit.toFruitDB())
+            getFruits()
+        }
+    }
+
+
     private fun getFruits() {
-        Log.e("FruitViewModel", "getFruits")
         viewModelScope.launch {
             _fruitUiState.update {
                 it.copy(
-                    fruits = mutableMapOf(PageType.Home to fruitRepository.getFruits()))
+                    fruits = mutableMapOf(PageType.Home to networkFruitRepository.getFruits(),
+                    PageType.Favorites to fruitsFromDb()))
             }
         }
     }
+
+    private fun fruitsFromDb() : List<Fruit> {
+        val fruits = mutableListOf<Fruit>()
+        viewModelScope.launch {
+            offlineFruitsRepository.getAllItemsStream().collect() { fruitsDB ->
+                fruitsDB.forEach { fruitDB ->
+                    fruits.add(fruitDB.toFruit())
+                }
+            }
+        }
+        return fruits
+    }
+
+
     fun updateDetailsScreenStates(fruit: Fruit) {
         _fruitUiState.update {
             it.copy(
@@ -47,12 +78,17 @@ class FruitViewModel(private val fruitRepository: FruitRepository) : ViewModel()
 
     fun resetHomeScreenStates() {
         _fruitUiState.update {
+            val firstFruit = if (it.fruits[it.currentPageType]?.isNotEmpty() == true) {
+                it.fruits[it.currentPageType]?.get(0)
+            } else {
+                null
+            }
+
             it.copy(
-                currentSelectedFruit = Fruit("", 0, "", "", "",
-                    Nutrition(0.0, 0.0, 0.0, 0, 0.0)
-                ),
+                currentSelectedFruit = firstFruit ?: Fruit("", 0, "", "", "", Nutrition(0.0, 0.0, 0.0, 0.0, 0.0)),
                 isShowingHomepage = true
             )
+
         }
     }
 
@@ -68,8 +104,11 @@ class FruitViewModel(private val fruitRepository: FruitRepository) : ViewModel()
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[APPLICATION_KEY] as FruitApplication)
-                val fruitRepository = application.container.fruitRepository
-                FruitViewModel(fruitRepository = fruitRepository)
+                val networkFruitRepository = application.container.networkFruitRepository
+                val offlineFruitRepository = application.container.offlineFruitRepository
+                FruitViewModel(
+                    networkFruitRepository = networkFruitRepository,
+                    offlineFruitsRepository = offlineFruitRepository)
             }
 
         }

@@ -1,7 +1,7 @@
 package com.petko.fruitapp.ui.screens
 
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,19 +17,20 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.petko.fruitapp.R
 import com.petko.fruitapp.utils.Fruit
 import com.petko.fruitapp.utils.PageType
@@ -38,8 +39,10 @@ import com.petko.fruitapp.utils.PageType
 fun FruitDetailsScreen(
     fruitUiState: FruitUiState,
     onBackPressed: () -> Unit,
-    modifier: Modifier = Modifier,
-    isFullScreen: Boolean = false
+    isFullScreen: Boolean = false,
+    addToFavourites: (Fruit) -> Unit,
+    removeFromFavourites: (Fruit) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     BackHandler {
         onBackPressed()
@@ -48,8 +51,8 @@ fun FruitDetailsScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.inverseOnSurface)
-                .padding(top = dimensionResource(R.dimen.detail_card_list_padding_top))
+                .background(color = MaterialTheme.colorScheme.primaryContainer)
+                .padding(top = 18.dp)
         ) {
             item {
                 if ( isFullScreen ) {
@@ -58,16 +61,21 @@ fun FruitDetailsScreen(
                         fruitUiState,
                         Modifier
                             .fillMaxWidth()
-                            .padding(bottom = dimensionResource(R.dimen.detail_topbar_padding_bottom))
+                            .padding(bottom = 18.dp)
                     )
                 }
                 FruitDetailsCard(
                     fruit = fruitUiState.currentSelectedFruit,
                     pageType = fruitUiState.currentPageType,
+                    isFullScreen = isFullScreen,
+                    addToFavourites = addToFavourites,
+                    removeFromFavourites = removeFromFavourites,
+                    isFavorite = (fruitUiState.fruits[PageType.Favorites]?.
+                        contains(fruitUiState.currentSelectedFruit)) ?: false,
                     modifier = if (isFullScreen) {
-                        Modifier.padding(horizontal = dimensionResource(R.dimen.detail_card_outer_padding_horizontal))
+                        Modifier.padding(horizontal = 24.dp)
                     } else {
-                        Modifier.padding(end = dimensionResource(R.dimen.detail_card_outer_padding_horizontal))
+                        Modifier.padding(horizontal = 18.dp)
                     }
                 )
             }
@@ -88,7 +96,7 @@ private fun FruitDetailsScreenTopBar(
         IconButton(
             onClick = onBackButtonClicked,
             modifier = Modifier
-                .padding(horizontal = dimensionResource(R.dimen.detail_topbar_back_button_padding_horizontal))
+                .padding(horizontal = 24.dp)
                 .background(MaterialTheme.colorScheme.surface, shape = CircleShape),
         ) {
             Icon(
@@ -100,12 +108,13 @@ private fun FruitDetailsScreenTopBar(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(end = dimensionResource(R.dimen.detail_subject_padding_end))
+                .padding(end = 40.dp)
         ) {
             Text(
                 text = fruitUiState.currentSelectedFruit.name,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                fontWeight = FontWeight.SemiBold
             )
         }
     }
@@ -115,117 +124,159 @@ private fun FruitDetailsScreenTopBar(
 private fun FruitDetailsCard(
     fruit: Fruit,
     pageType: PageType,
+    isFullScreen: Boolean = false,
+    addToFavourites: (Fruit) -> Unit,
+    removeFromFavourites: (Fruit) -> Unit,
+    isFavorite: Boolean = false,
+    modifier: Modifier = Modifier
+) {
+    Column (
+        modifier = modifier
+    ){
+        Card(
+            modifier = Modifier,
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        all = 20.dp
+                    )
+            ) {
+                FruitInfo(fruit, Modifier, isFullScreen)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(15.dp))
+
+        if (isFavorite) {
+            OutlinedButton(
+                onClick = { removeFromFavourites(fruit) },
+                shape = MaterialTheme.shapes.small,
+                modifier = Modifier.fillMaxWidth(),
+                border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+            ) {
+                Text(stringResource(R.string.remove_from_favourites))
+            }
+        } else {
+            Button(
+                onClick = { addToFavourites(fruit) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.small,
+                enabled = true
+            ) {
+                Text(stringResource(R.string.add_to_favourites))
+            }
+        }
+    }
+}
+
+@Composable
+private fun FruitInfo(
+    fruit: Fruit,
     modifier: Modifier = Modifier,
     isFullScreen: Boolean = false
 ) {
-    val context = LocalContext.current
-    val displayToast = { text: String ->
-        Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
+    if (!isFullScreen) {
+        ItemDetailsRow(detailType = stringResource(R.string.name), itemDetail = fruit.name, modifier = modifier)
     }
-    Card(
+    ItemDetailsRow(
+        detailType = stringResource(R.string.id),
+        itemDetail = fruit.id.toString(),
+        modifier = modifier
+    )
+    ItemDetailsRow(
+        detailType = stringResource(R.string.order),
+        itemDetail = fruit.order,
+        modifier = modifier
+    )
+    ItemDetailsRow(
+        detailType = stringResource(R.string.family),
+        itemDetail = fruit.family,
+        modifier = modifier
+    )
+    ItemDetailsRow(
+        detailType = stringResource(R.string.genus),
+        itemDetail = fruit.genus,
+        modifier = modifier
+    )
+    ItemDetailsRow(
+        detailType = stringResource(R.string.nutrition),
+        modifier = modifier
+    )
+    ItemNutritionRow(
+        detailType = stringResource(R.string.calories),
+        itemDetail = fruit.nutritions.calories,
         modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(dimensionResource(R.dimen.detail_card_inner_padding))
-        ) {
-            DetailsScreenHeader(
-                fruit,
-                Modifier.fillMaxWidth()
-            )
-            if (isFullScreen) {
-                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.detail_content_padding_top)))
-            } else {
-                Text(
-                    text = fruit.name,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.outline,
-                    modifier = Modifier.padding(
-                        top = dimensionResource(R.dimen.detail_content_padding_top),
-                        bottom = dimensionResource(R.dimen.detail_expanded_subject_body_spacing)
-                    ),
-                )
-            }
-            Text(
-                text = fruit.family,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            DetailsScreenButtonBar(pageType, displayToast)
-        }
-    }
+        unit = stringResource(R.string.kcal)
+    )
+    ItemNutritionRow(
+        detailType = stringResource(R.string.protein),
+        itemDetail = fruit.nutritions.protein,
+        modifier = modifier,
+        unit = stringResource(R.string.g)
+    )
+    ItemNutritionRow(
+        detailType = stringResource(R.string.carbohydrates),
+        itemDetail = fruit.nutritions.carbohydrates,
+        modifier = modifier,
+        unit = stringResource(R.string.g)
+    )
+    ItemNutritionRow(
+        detailType = stringResource(R.string.fats),
+        itemDetail = fruit.nutritions.fat,
+        modifier = modifier,
+        unit = stringResource(R.string.g)
+    )
+    ItemNutritionRow(
+        detailType = stringResource(R.string.sugar),
+        itemDetail = fruit.nutritions.sugar,
+        modifier = modifier,
+        unit = stringResource(R.string.g)
+    )
 }
 
 @Composable
-private fun DetailsScreenButtonBar(
-    pageType: PageType,
-    displayToast: (String) -> Unit,
+private fun ItemDetailsRow(
+    detailType: String,
+    itemDetail: String = "",
+    unit: String = "",
     modifier: Modifier = Modifier
 ) {
-    Box(modifier = modifier) {
-            ActionButton(
-                text = stringResource(id = R.string.add_to_favourite),
-                onButtonClicked = displayToast
-            )
-        }
-}
-
-
-@Composable
-private fun DetailsScreenHeader(fruit: Fruit, modifier: Modifier = Modifier) {
-    Column(
+    Row(
         modifier = Modifier
+            .fillMaxWidth()
             .padding(
-                horizontal = dimensionResource(R.dimen.fruit_header_content_padding_horizontal),
-                vertical = dimensionResource(R.dimen.fruit_header_content_padding_vertical)
-            ),
-        verticalArrangement = Arrangement.Center
+                vertical = 5.dp
+            )
     ) {
-        Text(
-            text = fruit.name,
-            style = MaterialTheme.typography.labelMedium
-        )
-        Text(
-            text = fruit.family,
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.outline
-        )
+        Text(text = detailType, fontWeight = FontWeight.Medium)
+        Spacer(modifier = Modifier.weight(1f))
+        Text(text = itemDetail + unit, fontStyle = FontStyle.Italic)
     }
 }
 
 @Composable
-private fun ActionButton(
-    text: String,
-    onButtonClicked: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    containIrreversibleAction: Boolean = false,
+private fun ItemNutritionRow(
+    detailType: String,
+    itemDetail: Double = 0.0,
+    unit: String = "",
+    modifier: Modifier = Modifier
 ) {
-    Box(modifier = modifier) {
-        Button(
-            onClick = { onButtonClicked(text) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = dimensionResource(R.dimen.detail_action_button_padding_vertical)),
-            colors = ButtonDefaults.buttonColors(
-                containerColor =
-                if (containIrreversibleAction) {
-                    MaterialTheme.colorScheme.onErrorContainer
-                } else {
-                    MaterialTheme.colorScheme.primaryContainer
-                }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                vertical = 5.dp
             )
-        ) {
-            Text(
-                text = text,
-                color =
-                if (containIrreversibleAction) {
-                    MaterialTheme.colorScheme.onError
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                }
-            )
-        }
+    ) {
+        Text(
+            text = detailType,
+            fontWeight = FontWeight.Normal,
+            modifier = modifier.padding(start = 30.dp)
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        Text(text = "$itemDetail $unit", fontStyle = FontStyle.Italic)
     }
 }

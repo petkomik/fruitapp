@@ -33,8 +33,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.petko.fruitapp.R
 import com.petko.fruitapp.utils.Fruit
@@ -50,25 +53,27 @@ fun FruitHomeScreen(
     onTabPressed: (PageType) -> Unit,
     onFruitPressed: (Fruit) -> Unit,
     onDetailScreenBackPressed: () -> Unit,
+    addToFavourites: (Fruit) -> Unit,
+    removeFromFavourites: (Fruit) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val navigationItemContentList = listOf(
         NavigationItemContent(
-            pageType = PageType.Favorites,
-            icon = Icons.Default.Favorite,
-            text = stringResource(id = R.string.tab_favorites)
-        ),
-        NavigationItemContent(
             pageType = PageType.Home,
             icon = Icons.Default.Home,
             text = stringResource(id = R.string.tab_home)
+        ),
+        NavigationItemContent(
+            pageType = PageType.Favorites,
+            icon = Icons.Default.Favorite,
+            text = stringResource(id = R.string.tab_favorites)
         )
     )
     if (navigationType == FruitNavigationType.PERMANENT_NAVIGATION_DRAWER) {
         val navigationDrawerContentDescription = stringResource(R.string.navigation_drawer)
         PermanentNavigationDrawer(
             drawerContent = {
-                PermanentDrawerSheet(Modifier.width(dimensionResource(R.dimen.drawer_width))) {
+                PermanentDrawerSheet(Modifier.width(240.dp)) {
                     NavigationDrawerContent(
                         selectedDestination = fruitUiState.currentPageType,
                         onTabPressed = onTabPressed,
@@ -76,8 +81,11 @@ fun FruitHomeScreen(
                         modifier = Modifier
                             .wrapContentWidth()
                             .fillMaxHeight()
-                            .background(MaterialTheme.colorScheme.inverseOnSurface)
-                            .padding(dimensionResource(R.dimen.drawer_padding_content))
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .padding(
+                                horizontal = 12.dp,
+                                vertical = 8.dp
+                            )
                     )
                 }
             },
@@ -90,6 +98,8 @@ fun FruitHomeScreen(
                 onTabPressed = onTabPressed,
                 onFruitPressed = onFruitPressed,
                 navigationItemContentList = navigationItemContentList,
+                addToFavourites = addToFavourites,
+                removeFromFavourites = removeFromFavourites,
                 modifier = modifier
             )
         }
@@ -102,6 +112,8 @@ fun FruitHomeScreen(
                 onTabPressed = onTabPressed,
                 onFruitPressed = onFruitPressed,
                 navigationItemContentList = navigationItemContentList,
+                addToFavourites = addToFavourites,
+                removeFromFavourites = removeFromFavourites,
                 modifier = modifier
             )
         } else {
@@ -109,6 +121,8 @@ fun FruitHomeScreen(
                 fruitUiState = fruitUiState,
                 isFullScreen = true,
                 onBackPressed = onDetailScreenBackPressed,
+                addToFavourites = addToFavourites,
+                removeFromFavourites = removeFromFavourites,
                 modifier = modifier
             )
         }
@@ -123,39 +137,40 @@ private fun FruitAppContent(
     onTabPressed: ((PageType) -> Unit),
     onFruitPressed: (Fruit) -> Unit,
     navigationItemContentList: List<NavigationItemContent>,
+    addToFavourites: (Fruit) -> Unit,
+    removeFromFavourites: (Fruit) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier) {
         Row(modifier = Modifier.fillMaxSize()) {
             AnimatedVisibility(visible = navigationType == FruitNavigationType.NAVIGATION_RAIL) {
-                val navigationRailContentDescription = stringResource(R.string.navigation_rail)
-                NavigationRail(
+                FruitNavigationRail(
                     currentTab = fruitUiState.currentPageType,
                     onTabPressed = onTabPressed,
                     navigationItemContentList = navigationItemContentList,
                     modifier = Modifier
-                        .testTag(navigationRailContentDescription)
                 )
             }
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.inverseOnSurface)
+                    .background(MaterialTheme.colorScheme.primaryContainer)
             ) {
                 if (contentType == FruitContentType.LIST_AND_DETAIL) {
                     FruitListAndDetailContent(
                         fruitUiState = fruitUiState,
                         onFruitPressed = onFruitPressed,
+                        addToFavourites = addToFavourites,
+                        removeFromFavourites = removeFromFavourites,
                         modifier = Modifier.weight(1f)
                     )
                 } else {
-//                    Text(text = fruitUiState.toString())
                     FruitListOnlyContent(
                         fruitUiState = fruitUiState,
                         onFruitPressed = onFruitPressed,
                         modifier = Modifier
                             .weight(1f)
-                            .padding(horizontal = dimensionResource(R.dimen.fruit_list_only_horizontal_padding))
+                            .padding(horizontal = 16.dp)
                     )
                 }
                 AnimatedVisibility(
@@ -166,7 +181,6 @@ private fun FruitAppContent(
                         onTabPressed = onTabPressed,
                         navigationItemContentList = navigationItemContentList,
                         modifier = Modifier
-                            .fillMaxWidth()
                     )
                 }
             }
@@ -175,13 +189,16 @@ private fun FruitAppContent(
 }
 
 @Composable
-private fun NavigationRail(
+private fun FruitNavigationRail(
     currentTab: PageType,
     onTabPressed: ((PageType) -> Unit),
     navigationItemContentList: List<NavigationItemContent>,
     modifier: Modifier = Modifier
 ) {
-    NavigationRail(modifier = modifier) {
+    NavigationRail(
+        modifier = modifier,
+        containerColor = MaterialTheme.colorScheme.primary
+        ) {
         for (navItem in navigationItemContentList) {
             NavigationRailItem(
                 selected = currentTab == navItem.pageType,
@@ -189,7 +206,12 @@ private fun NavigationRail(
                 icon = {
                     Icon(
                         imageVector = navItem.icon,
-                        contentDescription = navItem.text
+                        contentDescription = navItem.text,
+                        tint = if (currentTab != navItem.pageType) {
+                            MaterialTheme.colorScheme.background
+                        } else {
+                            MaterialTheme.colorScheme.primary
+                        }
                     )
                 }
             )
@@ -204,7 +226,10 @@ private fun BottomNavigationBar(
     navigationItemContentList: List<NavigationItemContent>,
     modifier: Modifier = Modifier
 ) {
-    NavigationBar(modifier = modifier) {
+    NavigationBar(
+        modifier = modifier,
+        containerColor = MaterialTheme.colorScheme.primary
+    ) {
         for (navItem in navigationItemContentList) {
             NavigationBarItem(
                 selected = currentTab == navItem.pageType,
@@ -212,7 +237,12 @@ private fun BottomNavigationBar(
                 icon = {
                     Icon(
                         imageVector = navItem.icon,
-                        contentDescription = navItem.text
+                        contentDescription = navItem.text,
+                        tint = if (currentTab != navItem.pageType) {
+                            MaterialTheme.colorScheme.background
+                        } else {
+                            MaterialTheme.colorScheme.primary
+                        }
                     )
                 }
             )
@@ -231,7 +261,7 @@ private fun NavigationDrawerContent(
         NavigationDrawerHeader(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(dimensionResource(R.dimen.profile_image_padding)),
+                .padding(12.dp)
         )
         for (navItem in navigationItemContentList) {
             NavigationDrawerItem(
@@ -239,19 +269,31 @@ private fun NavigationDrawerContent(
                 label = {
                     Text(
                         text = navItem.text,
-                        modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.drawer_padding_header))
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        color = if (selectedDestination != navItem.pageType) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onPrimary
+                        }
                     )
                 },
                 icon = {
                     Icon(
                         imageVector = navItem.icon,
-                        contentDescription = navItem.text
+                        contentDescription = navItem.text,
+                        tint = if (selectedDestination != navItem.pageType) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onPrimary
+                        }
                     )
                 },
                 colors = NavigationDrawerItemDefaults.colors(
-                    unselectedContainerColor = Color.Transparent
+                    unselectedContainerColor = Color.Transparent,
+                    selectedContainerColor = MaterialTheme.colorScheme.primary
                 ),
-                onClick = { onTabPressed(navItem.pageType) }
+                onClick = { onTabPressed(navItem.pageType) },
+                modifier = Modifier.padding(vertical = 4.dp)
             )
         }
     }
@@ -266,11 +308,14 @@ private fun NavigationDrawerHeader(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        FruitLogo(modifier = Modifier.size(70.dp))
+        FruitLogo(modifier = Modifier.size(50.dp))
         Text(
-            modifier = Modifier
-                .padding(horizontal = dimensionResource(R.dimen.drawer_padding_header)),
-            text = stringResource(id = R.string.app_name),
+            text = stringResource(id = R.string.app_name_uc),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurface,
+            fontStyle = FontStyle.Italic,
+            fontSize = TextUnit(18f, TextUnitType.Sp)
         )
     }
 }
