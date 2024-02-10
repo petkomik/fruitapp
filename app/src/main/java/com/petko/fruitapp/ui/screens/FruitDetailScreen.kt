@@ -41,8 +41,10 @@ import com.petko.fruitapp.utils.PageType
 fun FruitDetailsScreen(
     fruitUiState: FruitUiState,
     onBackPressed: () -> Unit,
-    modifier: Modifier = Modifier,
-    isFullScreen: Boolean = false
+    isFullScreen: Boolean = false,
+    addToFavourites: (Fruit) -> Unit,
+    removeFromFavourites: (Fruit) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     BackHandler {
         onBackPressed()
@@ -67,12 +69,16 @@ fun FruitDetailsScreen(
                 FruitDetailsCard(
                     fruit = fruitUiState.currentSelectedFruit,
                     pageType = fruitUiState.currentPageType,
+                    isFullScreen = isFullScreen,
+                    addToFavourites = addToFavourites,
+                    removeFromFavourites = removeFromFavourites,
+                    isFavorite = (fruitUiState.fruits[PageType.Favorites]?.
+                        contains(fruitUiState.currentSelectedFruit)) ?: false,
                     modifier = if (isFullScreen) {
                         Modifier.padding(horizontal = 24.dp)
                     } else {
                         Modifier.padding(horizontal = 18.dp)
-                    },
-                    isFullScreen = isFullScreen
+                    }
                 )
             }
         }
@@ -120,8 +126,11 @@ private fun FruitDetailsScreenTopBar(
 private fun FruitDetailsCard(
     fruit: Fruit,
     pageType: PageType,
-    modifier: Modifier = Modifier,
-    isFullScreen: Boolean = false
+    isFullScreen: Boolean = false,
+    addToFavourites: (Fruit) -> Unit,
+    removeFromFavourites: (Fruit) -> Unit,
+    isFavorite: Boolean = false,
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val displayToast = { text: String ->
@@ -147,22 +156,22 @@ private fun FruitDetailsCard(
 
         Spacer(modifier = Modifier.height(15.dp))
 
-        if (isFullScreen) {
+        if (isFavorite) {
+            OutlinedButton(
+                onClick = { removeFromFavourites(fruit) },
+                shape = MaterialTheme.shapes.small,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Remove From Favourites")
+            }
+        } else {
             Button(
-                onClick = {},
+                onClick = { addToFavourites(fruit) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.small,
                 enabled = true
             ) {
                 Text("Add To Favourites")
-            }
-        } else {
-            OutlinedButton(
-                onClick = {},
-                shape = MaterialTheme.shapes.small,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Remove From Favourites")
             }
         }
     }

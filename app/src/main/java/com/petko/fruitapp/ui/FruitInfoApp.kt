@@ -65,6 +65,12 @@ fun FruitInfoApp(
         onDetailScreenBackPressed = {
             fruitViewModel.resetHomeScreenStates()
         },
+        addToFavourites = { fruit: Fruit ->
+            fruitViewModel.addToFavorites(fruit)
+        },
+        removeFromFavourites = { fruit: Fruit ->
+            fruitViewModel.removeFromFavorites(fruit)
+        },
         modifier = modifier
     )
 }

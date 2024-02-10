@@ -1,5 +1,6 @@
 package com.petko.fruitapp.data
 
+import android.content.Context
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.petko.fruitapp.network.FruitApiService
 import kotlinx.serialization.json.Json
@@ -7,10 +8,11 @@ import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 
 interface AppContainer {
-    val fruitRepository: FruitRepository
+    val networkFruitRepository: FruitRepository
+    val offlineFruitRepository: FruitRepository
 }
 
-class DefaultAppContainer : AppContainer {
+class DefaultAppContainer (private val context: Context) : AppContainer {
     private val baseUrl = "https://www.fruityvice.com/api/"
 
     private val retrofit: Retrofit = Retrofit.Builder()
@@ -22,7 +24,11 @@ class DefaultAppContainer : AppContainer {
         retrofit.create(FruitApiService::class.java)
     }
 
-    override val fruitRepository: FruitRepository by lazy {
+    override val networkFruitRepository: FruitRepository by lazy {
         NetworkFruitRepository(retrofitService)
+    }
+
+    override val offlineFruitRepository: FruitRepository by lazy {
+        OfflineFruitsRepository(FruitsDatabase.getDatabase(context).fruitDao())
     }
 }

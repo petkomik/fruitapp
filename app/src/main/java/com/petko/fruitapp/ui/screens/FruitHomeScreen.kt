@@ -53,6 +53,8 @@ fun FruitHomeScreen(
     onTabPressed: (PageType) -> Unit,
     onFruitPressed: (Fruit) -> Unit,
     onDetailScreenBackPressed: () -> Unit,
+    addToFavourites: (Fruit) -> Unit,
+    removeFromFavourites: (Fruit) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val navigationItemContentList = listOf(
@@ -96,6 +98,8 @@ fun FruitHomeScreen(
                 onTabPressed = onTabPressed,
                 onFruitPressed = onFruitPressed,
                 navigationItemContentList = navigationItemContentList,
+                addToFavourites = addToFavourites,
+                removeFromFavourites = removeFromFavourites,
                 modifier = modifier
             )
         }
@@ -108,6 +112,8 @@ fun FruitHomeScreen(
                 onTabPressed = onTabPressed,
                 onFruitPressed = onFruitPressed,
                 navigationItemContentList = navigationItemContentList,
+                addToFavourites = addToFavourites,
+                removeFromFavourites = removeFromFavourites,
                 modifier = modifier
             )
         } else {
@@ -115,6 +121,8 @@ fun FruitHomeScreen(
                 fruitUiState = fruitUiState,
                 isFullScreen = true,
                 onBackPressed = onDetailScreenBackPressed,
+                addToFavourites = addToFavourites,
+                removeFromFavourites = removeFromFavourites,
                 modifier = modifier
             )
         }
@@ -129,12 +137,13 @@ private fun FruitAppContent(
     onTabPressed: ((PageType) -> Unit),
     onFruitPressed: (Fruit) -> Unit,
     navigationItemContentList: List<NavigationItemContent>,
+    addToFavourites: (Fruit) -> Unit,
+    removeFromFavourites: (Fruit) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier) {
         Row(modifier = Modifier.fillMaxSize()) {
             AnimatedVisibility(visible = navigationType == FruitNavigationType.NAVIGATION_RAIL) {
-                val navigationRailContentDescription = stringResource(R.string.navigation_rail)
                 FruitNavigationRail(
                     currentTab = fruitUiState.currentPageType,
                     onTabPressed = onTabPressed,
@@ -151,6 +160,8 @@ private fun FruitAppContent(
                     FruitListAndDetailContent(
                         fruitUiState = fruitUiState,
                         onFruitPressed = onFruitPressed,
+                        addToFavourites = addToFavourites,
+                        removeFromFavourites = removeFromFavourites,
                         modifier = Modifier.weight(1f)
                     )
                 } else {

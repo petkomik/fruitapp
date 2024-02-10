@@ -78,6 +78,8 @@ fun FruitListOnlyContent(
 fun FruitListAndDetailContent(
     fruitUiState: FruitUiState,
     onFruitPressed: (Fruit) -> Unit,
+    addToFavourites: (Fruit) -> Unit,
+    removeFromFavourites: (Fruit) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val fruits = fruitUiState.fruits[fruitUiState.currentPageType] ?: emptyList()
@@ -105,8 +107,10 @@ fun FruitListAndDetailContent(
         val activity = LocalContext.current as Activity
         FruitDetailsScreen(
             fruitUiState = fruitUiState,
-            modifier = Modifier.weight(1f),
-            onBackPressed = { activity.finish() }
+            onBackPressed = { activity.finish() },
+            addToFavourites = addToFavourites,
+            removeFromFavourites = removeFromFavourites,
+            modifier = Modifier.weight(1f)
         )
     }
 }
