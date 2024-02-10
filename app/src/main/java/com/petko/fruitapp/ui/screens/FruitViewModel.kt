@@ -78,12 +78,17 @@ class FruitViewModel(
 
     fun resetHomeScreenStates() {
         _fruitUiState.update {
+            val firstFruit = if (it.fruits[it.currentPageType]?.isNotEmpty() == true) {
+                it.fruits[it.currentPageType]?.get(0)
+            } else {
+                null
+            }
+
             it.copy(
-                currentSelectedFruit = it.fruits[it.currentPageType]?.get(0)
-                    ?: Fruit("", 0, "", "", "",
-                        Nutrition(0.0, 0.0, 0.0, 0.0, 0.0)),
+                currentSelectedFruit = firstFruit ?: Fruit("", 0, "", "", "", Nutrition(0.0, 0.0, 0.0, 0.0, 0.0)),
                 isShowingHomepage = true
             )
+
         }
     }
 
