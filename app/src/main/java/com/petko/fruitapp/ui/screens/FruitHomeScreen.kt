@@ -197,7 +197,7 @@ private fun FruitNavigationRail(
 ) {
     NavigationRail(
         modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.primaryContainer
+        containerColor = MaterialTheme.colorScheme.primary
         ) {
         for (navItem in navigationItemContentList) {
             NavigationRailItem(
@@ -206,7 +206,12 @@ private fun FruitNavigationRail(
                 icon = {
                     Icon(
                         imageVector = navItem.icon,
-                        contentDescription = navItem.text
+                        contentDescription = navItem.text,
+                        tint = if (currentTab != navItem.pageType) {
+                            MaterialTheme.colorScheme.background
+                        } else {
+                            MaterialTheme.colorScheme.primary
+                        }
                     )
                 }
             )
@@ -223,7 +228,7 @@ private fun BottomNavigationBar(
 ) {
     NavigationBar(
         modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.primaryContainer
+        containerColor = MaterialTheme.colorScheme.primary
     ) {
         for (navItem in navigationItemContentList) {
             NavigationBarItem(
@@ -232,7 +237,12 @@ private fun BottomNavigationBar(
                 icon = {
                     Icon(
                         imageVector = navItem.icon,
-                        contentDescription = navItem.text
+                        contentDescription = navItem.text,
+                        tint = if (currentTab != navItem.pageType) {
+                            MaterialTheme.colorScheme.background
+                        } else {
+                            MaterialTheme.colorScheme.primary
+                        }
                     )
                 }
             )
@@ -259,17 +269,28 @@ private fun NavigationDrawerContent(
                 label = {
                     Text(
                         text = navItem.text,
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        color = if (selectedDestination != navItem.pageType) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onPrimary
+                        }
                     )
                 },
                 icon = {
                     Icon(
                         imageVector = navItem.icon,
-                        contentDescription = navItem.text
+                        contentDescription = navItem.text,
+                        tint = if (selectedDestination != navItem.pageType) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onPrimary
+                        }
                     )
                 },
                 colors = NavigationDrawerItemDefaults.colors(
-                    unselectedContainerColor = Color.Transparent
+                    unselectedContainerColor = Color.Transparent,
+                    selectedContainerColor = MaterialTheme.colorScheme.primary
                 ),
                 onClick = { onTabPressed(navItem.pageType) },
                 modifier = Modifier.padding(vertical = 4.dp)

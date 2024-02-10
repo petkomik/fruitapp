@@ -1,7 +1,7 @@
 package com.petko.fruitapp.ui.screens
 
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -28,7 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -115,7 +113,7 @@ private fun FruitDetailsScreenTopBar(
             Text(
                 text = fruitUiState.currentSelectedFruit.name,
                 style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
                 fontWeight = FontWeight.SemiBold
             )
         }
@@ -132,16 +130,12 @@ private fun FruitDetailsCard(
     isFavorite: Boolean = false,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
-    val displayToast = { text: String ->
-        Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
-    }
     Column (
         modifier = modifier
     ){
         Card(
             modifier = Modifier,
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
             Column(
                 modifier = Modifier
@@ -160,9 +154,10 @@ private fun FruitDetailsCard(
             OutlinedButton(
                 onClick = { removeFromFavourites(fruit) },
                 shape = MaterialTheme.shapes.small,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
             ) {
-                Text("Remove From Favourites")
+                Text(stringResource(R.string.remove_from_favourites))
             }
         } else {
             Button(
@@ -171,7 +166,7 @@ private fun FruitDetailsCard(
                 shape = MaterialTheme.shapes.small,
                 enabled = true
             ) {
-                Text("Add To Favourites")
+                Text(stringResource(R.string.add_to_favourites))
             }
         }
     }
@@ -184,61 +179,61 @@ private fun FruitInfo(
     isFullScreen: Boolean = false
 ) {
     if (!isFullScreen) {
-        ItemDetailsRow(detailType = "Name", itemDetail = fruit.name, modifier = modifier)
+        ItemDetailsRow(detailType = stringResource(R.string.name), itemDetail = fruit.name, modifier = modifier)
     }
     ItemDetailsRow(
-        detailType = "Id",
+        detailType = stringResource(R.string.id),
         itemDetail = fruit.id.toString(),
         modifier = modifier
     )
     ItemDetailsRow(
-        detailType = "Order",
+        detailType = stringResource(R.string.order),
         itemDetail = fruit.order,
         modifier = modifier
     )
     ItemDetailsRow(
-        detailType = "Family",
+        detailType = stringResource(R.string.family),
         itemDetail = fruit.family,
         modifier = modifier
     )
     ItemDetailsRow(
-        detailType = "Genus",
+        detailType = stringResource(R.string.genus),
         itemDetail = fruit.genus,
         modifier = modifier
     )
     ItemDetailsRow(
-        detailType = "Nutrition:",
+        detailType = stringResource(R.string.nutrition),
         modifier = modifier
     )
     ItemNutritionRow(
-        detailType = "Calories",
+        detailType = stringResource(R.string.calories),
         itemDetail = fruit.nutritions.calories,
         modifier = modifier,
-        unit = "kcal"
+        unit = stringResource(R.string.kcal)
     )
     ItemNutritionRow(
-        detailType = "Protein",
+        detailType = stringResource(R.string.protein),
         itemDetail = fruit.nutritions.protein,
         modifier = modifier,
-        unit = "g"
+        unit = stringResource(R.string.g)
     )
     ItemNutritionRow(
-        detailType = "Carbohydrates",
+        detailType = stringResource(R.string.carbohydrates),
         itemDetail = fruit.nutritions.carbohydrates,
         modifier = modifier,
-        unit = "g"
+        unit = stringResource(R.string.g)
     )
     ItemNutritionRow(
-        detailType = "Fats",
+        detailType = stringResource(R.string.fats),
         itemDetail = fruit.nutritions.fat,
         modifier = modifier,
-        unit = "g"
+        unit = stringResource(R.string.g)
     )
     ItemNutritionRow(
-        detailType = "Sugar",
+        detailType = stringResource(R.string.sugar),
         itemDetail = fruit.nutritions.sugar,
         modifier = modifier,
-        unit = "g"
+        unit = stringResource(R.string.g)
     )
 }
 
@@ -283,42 +278,5 @@ private fun ItemNutritionRow(
         )
         Spacer(modifier = Modifier.weight(1f))
         Text(text = "$itemDetail $unit", fontStyle = FontStyle.Italic)
-    }
-}
-
-@Composable
-private fun ActionButton(
-    text: String,
-    onButtonClicked: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    containIrreversibleAction: Boolean = false,
-) {
-    Box(modifier = modifier) {
-        Button(
-            onClick = { onButtonClicked(text) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = 10.dp
-                ),
-            colors = ButtonDefaults.buttonColors(
-                containerColor =
-                if (containIrreversibleAction) {
-                    MaterialTheme.colorScheme.onErrorContainer
-                } else {
-                    MaterialTheme.colorScheme.primaryContainer
-                }
-            )
-        ) {
-            Text(
-                text = text,
-                color =
-                if (containIrreversibleAction) {
-                    MaterialTheme.colorScheme.onError
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                }
-            )
-        }
     }
 }

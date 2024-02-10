@@ -127,9 +127,9 @@ fun FruitListItem(
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = if (selected) {
-                MaterialTheme.colorScheme.secondaryContainer
+                MaterialTheme.colorScheme.tertiary
             } else {
-                MaterialTheme.colorScheme.primaryContainer
+                MaterialTheme.colorScheme.primary
             }
         ),
         onClick = onCardClick,
@@ -149,14 +149,14 @@ fun FruitListItem(
                 Text(
                     text = fruit.name,
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = MaterialTheme.colorScheme.surface,
                     modifier = Modifier.padding(bottom = 8.dp),
                     fontWeight = FontWeight.Medium
                 )
                 Text(
                     text = "order: ${fruit.order}, family: ${fruit.family}, genus: ${fruit.genus}",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = MaterialTheme.colorScheme.surfaceVariant,
                     fontStyle = FontStyle.Italic
                 )
             }
@@ -180,7 +180,7 @@ private fun FruitHomeTopBar(modifier: Modifier = Modifier) {
             text = stringResource(id = R.string.app_name_uc),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
             fontStyle = FontStyle.Italic,
             fontSize = TextUnit(18f, TextUnitType.Sp)
         )
