@@ -24,7 +24,7 @@ class NetworkFruitRepository(
 }
 
 class OfflineFruitsRepository(private val fruitDao: FruitDao) : FruitRepository {
-    override suspend fun getFruits(): List<Fruit> {return emptyList<Fruit>()}
+    override suspend fun getFruits(): List<Fruit> {return emptyList()}
     override fun getAllItemsStream(): Flow<List<FruitDB>> = fruitDao.getAllItems()
     override suspend fun insertItem(item: FruitDB) = fruitDao.insert(item)
     override suspend fun deleteItem(item: FruitDB) = fruitDao.delete(item)

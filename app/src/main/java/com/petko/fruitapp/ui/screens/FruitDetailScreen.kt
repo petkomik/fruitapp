@@ -39,10 +39,10 @@ import com.petko.fruitapp.utils.PageType
 fun FruitDetailsScreen(
     fruitUiState: FruitUiState,
     onBackPressed: () -> Unit,
-    isFullScreen: Boolean = false,
     addToFavourites: (Fruit) -> Unit,
     removeFromFavourites: (Fruit) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isFullScreen: Boolean = false
 ) {
     BackHandler {
         onBackPressed()
@@ -66,7 +66,6 @@ fun FruitDetailsScreen(
                 }
                 FruitDetailsCard(
                     fruit = fruitUiState.currentSelectedFruit,
-                    pageType = fruitUiState.currentPageType,
                     isFullScreen = isFullScreen,
                     addToFavourites = addToFavourites,
                     removeFromFavourites = removeFromFavourites,
@@ -123,12 +122,11 @@ private fun FruitDetailsScreenTopBar(
 @Composable
 private fun FruitDetailsCard(
     fruit: Fruit,
-    pageType: PageType,
+    modifier: Modifier = Modifier,
     isFullScreen: Boolean = false,
     addToFavourites: (Fruit) -> Unit,
     removeFromFavourites: (Fruit) -> Unit,
-    isFavorite: Boolean = false,
-    modifier: Modifier = Modifier
+    isFavorite: Boolean = false
 ) {
     Column (
         modifier = modifier
@@ -179,36 +177,32 @@ private fun FruitInfo(
     isFullScreen: Boolean = false
 ) {
     if (!isFullScreen) {
-        ItemDetailsRow(detailType = stringResource(R.string.name), itemDetail = fruit.name, modifier = modifier)
+        ItemDetailsRow(
+            detailType = stringResource(R.string.name),
+            itemDetail = fruit.name)
     }
     ItemDetailsRow(
         detailType = stringResource(R.string.id),
         itemDetail = fruit.id.toString(),
-        modifier = modifier
     )
     ItemDetailsRow(
         detailType = stringResource(R.string.order),
         itemDetail = fruit.order,
-        modifier = modifier
     )
     ItemDetailsRow(
         detailType = stringResource(R.string.family),
         itemDetail = fruit.family,
-        modifier = modifier
     )
     ItemDetailsRow(
         detailType = stringResource(R.string.genus),
         itemDetail = fruit.genus,
-        modifier = modifier
     )
     ItemDetailsRow(
         detailType = stringResource(R.string.nutrition),
-        modifier = modifier
     )
     ItemNutritionRow(
         detailType = stringResource(R.string.calories),
         itemDetail = fruit.nutritions.calories,
-        modifier = modifier,
         unit = stringResource(R.string.kcal)
     )
     ItemNutritionRow(
@@ -241,8 +235,7 @@ private fun FruitInfo(
 private fun ItemDetailsRow(
     detailType: String,
     itemDetail: String = "",
-    unit: String = "",
-    modifier: Modifier = Modifier
+    unit: String = ""
 ) {
     Row(
         modifier = Modifier
@@ -260,9 +253,9 @@ private fun ItemDetailsRow(
 @Composable
 private fun ItemNutritionRow(
     detailType: String,
+    modifier: Modifier = Modifier,
     itemDetail: Double = 0.0,
-    unit: String = "",
-    modifier: Modifier = Modifier
+    unit: String = ""
 ) {
     Row(
         modifier = Modifier

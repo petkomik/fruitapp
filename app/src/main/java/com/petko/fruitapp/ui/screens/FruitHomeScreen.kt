@@ -20,10 +20,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.PermanentDrawerSheet
 import androidx.compose.material3.PermanentNavigationDrawer
 import androidx.compose.material3.Text
@@ -208,12 +210,15 @@ private fun FruitNavigationRail(
                         imageVector = navItem.icon,
                         contentDescription = navItem.text,
                         tint = if (currentTab != navItem.pageType) {
-                            MaterialTheme.colorScheme.background
+                            MaterialTheme.colorScheme.onPrimary
                         } else {
                             MaterialTheme.colorScheme.primary
                         }
                     )
-                }
+                },
+                colors = NavigationRailItemDefaults.colors(
+                    indicatorColor = MaterialTheme.colorScheme.onPrimary
+                )
             )
         }
     }
@@ -239,12 +244,15 @@ private fun BottomNavigationBar(
                         imageVector = navItem.icon,
                         contentDescription = navItem.text,
                         tint = if (currentTab != navItem.pageType) {
-                            MaterialTheme.colorScheme.background
+                            MaterialTheme.colorScheme.onPrimary
                         } else {
                             MaterialTheme.colorScheme.primary
                         }
                     )
-                }
+                },
+                colors = NavigationBarItemDefaults.colors(
+                    indicatorColor = MaterialTheme.colorScheme.onPrimary
+                )
             )
         }
     }
