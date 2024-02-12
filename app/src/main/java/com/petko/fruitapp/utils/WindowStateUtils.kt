@@ -8,3 +8,7 @@ enum class FruitNavigationType {
 enum class FruitContentType {
     LIST_ONLY, LIST_AND_DETAIL
 }
+
+enum class PageType {
+    Home, Favorites
+}

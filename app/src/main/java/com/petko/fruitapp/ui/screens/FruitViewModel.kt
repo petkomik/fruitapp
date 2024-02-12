@@ -18,8 +18,7 @@ import kotlinx.coroutines.launch
 
 
 class FruitViewModel(
-    private val networkFruitRepository: FruitRepository,
-    private val offlineFruitsRepository: FruitRepository
+    private val fruitRepository: FruitRepository,
 ) : ViewModel() {
 
     private val _fruitUiState = MutableStateFlow(FruitUiState())
@@ -31,14 +30,14 @@ class FruitViewModel(
 
     fun addToFavorites(fruit: Fruit) {
         viewModelScope.launch {
-            offlineFruitsRepository.insertItem(fruit.toFruitDB())
+            fruitRepository.insertItem(fruit.toFruitDB())
             getFruits()
         }
     }
 
     fun removeFromFavorites(fruit: Fruit) {
         viewModelScope.launch {
-            offlineFruitsRepository.deleteItem(fruit.toFruitDB())
+            fruitRepository.deleteItem(fruit.toFruitDB())
             getFruits()
         }
     }
@@ -48,7 +47,7 @@ class FruitViewModel(
         viewModelScope.launch {
             _fruitUiState.update {
                 it.copy(
-                    fruits = mutableMapOf(PageType.Home to networkFruitRepository.getFruits(),
+                    fruits = mutableMapOf(PageType.Home to fruitRepository.getFruits(),
                     PageType.Favorites to fruitsFromDb()))
             }
         }
@@ -57,7 +56,7 @@ class FruitViewModel(
     private fun fruitsFromDb() : List<Fruit> {
         val fruits = mutableListOf<Fruit>()
         viewModelScope.launch {
-            offlineFruitsRepository.getAllItemsStream().collect { fruitsDB ->
+            fruitRepository.getAllItemsStream().collect { fruitsDB ->
                 fruitsDB.forEach { fruitDB ->
                     fruits.add(fruitDB.toFruit())
                 }
@@ -88,11 +87,10 @@ class FruitViewModel(
                 currentSelectedFruit = firstFruit ?: Fruit("", 0, "", "", "", Nutrition(0.0, 0.0, 0.0, 0.0, 0.0)),
                 isShowingHomepage = true
             )
-
         }
     }
 
-    fun updateCurrentMailbox(pageType: PageType) {
+    fun updateCurrentPageType(pageType: PageType) {
         _fruitUiState.update {
             it.copy(
                 currentPageType = pageType
@@ -104,13 +102,9 @@ class FruitViewModel(
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[APPLICATION_KEY] as FruitApplication)
-                val networkFruitRepository = application.container.networkFruitRepository
-                val offlineFruitRepository = application.container.offlineFruitRepository
-                FruitViewModel(
-                    networkFruitRepository = networkFruitRepository,
-                    offlineFruitsRepository = offlineFruitRepository)
+                val fruitRepository = application.container.fruitRepository
+                FruitViewModel(fruitRepository = fruitRepository)
             }
-
         }
     }
 

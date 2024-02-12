@@ -6,8 +6,8 @@ The project was developed by me (Petko Mikov) as a final exam for the course 762
 
 ## Usage
 
-![](app/src/main/res/demo-light.gif "Light Mode Demo GIF"){width=30%}
-![](app/src/main/res/demo-dark.gif "Dark Mode Demo GIF"){width=30%}
+![](app/src/main/res/demo-and-report/demo-light.gif "Light Mode Demo GIF"){width=30%}
+![](app/src/main/res/demo-and-report/demo-dark.gif "Dark Mode Demo GIF"){width=30%}
  
 ## Getting Started
 

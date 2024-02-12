@@ -8,8 +8,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 
 interface AppContainer {
-    val networkFruitRepository: FruitRepository
-    val offlineFruitRepository: FruitRepository
+    val fruitRepository: FruitRepository
 }
 
 class DefaultAppContainer (private val context: Context) : AppContainer {
@@ -24,11 +23,11 @@ class DefaultAppContainer (private val context: Context) : AppContainer {
         retrofit.create(FruitApiService::class.java)
     }
 
-    override val networkFruitRepository: FruitRepository by lazy {
-        NetworkFruitRepository(retrofitService)
+    override val fruitRepository: FruitRepository by lazy {
+        FruitRepositoryImpl(
+            retrofitService,
+            FruitsDatabase.getDatabase(context).fruitDao()
+        )
     }
 
-    override val offlineFruitRepository: FruitRepository by lazy {
-        OfflineFruitsRepository(FruitsDatabase.getDatabase(context).fruitDao())
-    }
 }

@@ -69,8 +69,8 @@ fun FruitDetailsScreen(
                     isFullScreen = isFullScreen,
                     addToFavourites = addToFavourites,
                     removeFromFavourites = removeFromFavourites,
-                    isFavorite = (fruitUiState.fruits[PageType.Favorites]?.
-                        contains(fruitUiState.currentSelectedFruit)) ?: false,
+                    isFavorite = (fruitUiState.fruits[PageType.Favorites]?.map { it.id }?.
+                        contains(fruitUiState.currentSelectedFruit.id)) ?: false,
                     modifier = if (isFullScreen) {
                         Modifier.padding(horizontal = 24.dp)
                     } else {
