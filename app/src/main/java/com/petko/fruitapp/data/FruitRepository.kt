@@ -3,7 +3,6 @@ package com.petko.fruitapp.data
 import com.petko.fruitapp.utils.Fruit
 import com.petko.fruitapp.network.FruitApiService
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 
 interface FruitRepository {
     suspend fun getFruits(): List<Fruit>
@@ -14,19 +13,12 @@ interface FruitRepository {
 
 }
 
-class NetworkFruitRepository(
-    private val fruitApiService: FruitApiService
+class FruitRepositoryImpl(
+    private val fruitApiService: FruitApiService,
+    private val fruitDao: FruitDao
 ) : FruitRepository {
     override suspend fun getFruits(): List<Fruit> = fruitApiService.getFruits()
-    override fun getAllItemsStream(): Flow<List<FruitDB>> {return emptyFlow()}
-    override suspend fun insertItem(item: FruitDB) {}
-    override suspend fun deleteItem(item: FruitDB) {}
-}
-
-class OfflineFruitsRepository(private val fruitDao: FruitDao) : FruitRepository {
-    override suspend fun getFruits(): List<Fruit> {return emptyList()}
     override fun getAllItemsStream(): Flow<List<FruitDB>> = fruitDao.getAllItems()
     override suspend fun insertItem(item: FruitDB) = fruitDao.insert(item)
     override suspend fun deleteItem(item: FruitDB) = fruitDao.delete(item)
-
 }

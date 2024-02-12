@@ -51,7 +51,7 @@ fun FruitInfoApp(
         contentType= contentType,
         fruitUiState = fruitUiState,
         onTabPressed = { pageType: PageType ->
-            fruitViewModel.updateCurrentMailbox(pageType = pageType)
+            fruitViewModel.updateCurrentPageType(pageType = pageType)
             fruitViewModel.resetHomeScreenStates()
         },
         onFruitPressed = { fruit: Fruit ->
