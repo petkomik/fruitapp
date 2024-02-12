@@ -57,7 +57,7 @@ class FruitViewModel(
     private fun fruitsFromDb() : List<Fruit> {
         val fruits = mutableListOf<Fruit>()
         viewModelScope.launch {
-            offlineFruitsRepository.getAllItemsStream().collect() { fruitsDB ->
+            offlineFruitsRepository.getAllItemsStream().collect { fruitsDB ->
                 fruitsDB.forEach { fruitDB ->
                     fruits.add(fruitDB.toFruit())
                 }
