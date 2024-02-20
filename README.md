@@ -5,10 +5,10 @@ This is an Android Compose app that fetches data from the a web API (https://www
 The project was developed by me (Petko Mikov) as a final exam for the course 76254A Engineering of Mobile Systems taught by Prof. Niccolò Pretto in the Free University of Bozen-Bolzano during the 1st semester of the 2023/24 study year.
 
 ## Usage
-
-<img src="app/src/main/res/demo-and-report/demo-light.gif" width="30%" height="30%"/>
-<img src="app/src/main/res/demo-and-report/demo-dark.gif" width="30%" height="30%"/>
- 
+<p float="left">
+ <img src="app/src/main/res/demo-and-report/demo-light.gif" width="30%" height="30%"/>
+ <img src="app/src/main/res/demo-and-report/demo-dark.gif" width="30%" height="30%"/>
+</p> 
 ## Getting Started
 
 To run the project, clonse the git repo and open it in Android Studio. No special Installation are neccesery, simply run it on a virtual or connected physical device
