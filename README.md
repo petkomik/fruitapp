@@ -9,6 +9,7 @@ The project was developed by me (Petko Mikov) as a final exam for the course 762
  <img src="app/src/main/res/demo-and-report/demo-light.gif" width="30%" height="30%"/>
  <img src="app/src/main/res/demo-and-report/demo-dark.gif" width="30%" height="30%"/>
 </p> 
+
 ## Getting Started
 
 To run the project, clonse the git repo and open it in Android Studio. No special Installation are neccesery, simply run it on a virtual or connected physical device
